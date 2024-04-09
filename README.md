@@ -85,7 +85,7 @@ See the list of [contributors](https://github.com/joomlatools/joomlatools-consol
 
 ## License
 
-Joomlatools Console is free and open-source software licensed under the [MPLv2 license](LICENSE.txt).
+Joomlatools Console is free and open-source software licensed under the [MPLv2 license](LICENSE).
 
 ## Community
 
