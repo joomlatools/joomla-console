@@ -151,7 +151,7 @@ abstract class AbstractDatabase extends AbstractSite
             $contents = <<<STR
 [client]
 user={$this->mysql->user}
-password={$this->mysql->password}
+password="{$this->mysql->password}"
 host={$this->mysql->host}
 port={$this->mysql->port}
 STR;
