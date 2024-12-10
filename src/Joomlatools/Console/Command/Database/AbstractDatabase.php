@@ -7,6 +7,7 @@
 
 namespace Joomlatools\Console\Command\Database;
 
+use RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -148,16 +149,20 @@ abstract class AbstractDatabase extends AbstractSite
             $file = tmpfile();
             $path = stream_get_meta_data($file)['uri'];
 
+            $user = $this->processString($this->mysql->user);
+            $password = $this->processString($this->mysql->password);
+            $host = $this->processString($this->mysql->host);
+            $port = $this->processString($this->mysql->port);
+
             $contents = <<<STR
 [client]
-user={$this->mysql->user}
-password="{$this->mysql->password}"
-host={$this->mysql->host}
-port={$this->mysql->port}
+user={$user}
+password={$password}
+host={$host}
+port={$port}
 STR;
 
             fwrite($file, $contents);
-
 
             return exec($callback($path));
         }
@@ -184,5 +189,21 @@ STR;
         $input->setOption('mysql-port', $this->mysql->port);
         $input->setOption('mysql-database', $this->target_db);
         $input->setOption('mysql-driver', $this->mysql->driver);
+    }
+
+    private function processString(string $input): string
+    {
+        // Undo escaped characters
+        $input = stripslashes($input);
+
+        // Check if the string starts and ends with single quotes and replace with double quotes
+        // or add double quotes if the string does not start and end with quotes
+        if (preg_match("/^'(.*)'$/", $input, $matches)) {
+            $input = '"' . $matches[1] . '"';
+        } elseif (!preg_match('/^["\'].*["\']$/', $input)) {
+            $input = '"' . $input . '"';
+        }
+
+        return $input;
     }
 }
